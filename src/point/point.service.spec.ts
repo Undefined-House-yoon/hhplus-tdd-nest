@@ -2,15 +2,7 @@ import { PointService } from './point.service';
 import { UserPointTable } from '../database/userpoint.table';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PointHistoryTable } from '../database/pointhistory.table';
-// id: number;
-// point: number;
-// updateMillis: number;
 
-// id: number;
-// userId: number;
-// type: TransactionType;
-// amount: number;
-// timeMillis: number;
 export const pointsService = {
   charge: jest.fn(),
   use: jest.fn(),
