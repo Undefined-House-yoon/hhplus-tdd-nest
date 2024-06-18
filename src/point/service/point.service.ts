@@ -13,7 +13,7 @@ export class PointService {
     private readonly userPointTable: UserPointTable,
     private readonly pointHistoryTable: PointHistoryTable,
   ) {}
-
+  //동시성 문제 트랜잭션으로 처리
   async chargePoint(id: number, amount: number) {
     const userPoint = await this.userPointTable.selectById(id);
     const originalPoint = userPoint.point;
@@ -34,7 +34,7 @@ export class PointService {
     }
     return userPoint;
   }
-
+  //동시성 문제 트랜잭션으로 처리
   async usePoint(id: number, usePointAmount: number) {
     const userPoint = await this.userPointTable.selectById(id);
     const originalPoint = userPoint.point;
