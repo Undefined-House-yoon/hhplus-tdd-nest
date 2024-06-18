@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-import { UserPoint } from 'src/point/point.model';
+import { UserPoint } from 'src/point/model/point.model';
 
 /**
  * 해당 Table 클래스는 변경하지 않고 공개된 API 만을 사용해 데이터를 제어합니다.
@@ -11,7 +11,7 @@ export class UserPointTable {
 
   selectById(id: number): Promise<UserPoint> {
     this.isValidId(id);
-    return new Promise((r) =>
+    return new Promise(r =>
       setTimeout(() => {
         r(this.table.get(id) ?? { id: id, point: 0, updateMillis: Date.now() });
       }, randomInt(200)),
@@ -20,7 +20,7 @@ export class UserPointTable {
 
   insertOrUpdate(id: number, amount: number): Promise<UserPoint> {
     this.isValidId(id);
-    return new Promise((r) =>
+    return new Promise(r =>
       setTimeout(() => {
         console.log(`포인트 : ${amount}`);
         const userPoint = { id: id, point: amount, updateMillis: Date.now() };
