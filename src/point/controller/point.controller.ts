@@ -6,17 +6,17 @@ import {
   Patch,
   ValidationPipe,
 } from '@nestjs/common';
-import { PointHistory, TransactionType, UserPoint } from '../model/point.model';
-import { UserPointTable } from 'src/database/userpoint.table';
-import { PointHistoryTable } from 'src/database/pointhistory.table';
+import { PointHistory, UserPoint } from '../model/point.model';
+// import { UserPointTable } from '../../database/userpoint.table';
+// import { PointHistoryTable } from '../../database/pointhistory.table';
 import { PointBody as PointDto } from '../dto/point.dto';
 import { PointService } from '../service/point.service';
 
 @Controller('/point')
 export class PointController {
   constructor(
-    private readonly userDb: UserPointTable,
-    private readonly historyDb: PointHistoryTable,
+    // private readonly userDb: UserPointTable,
+    // private readonly historyDb: PointHistoryTable,
     private pointServices: PointService,
   ) {}
 
@@ -35,7 +35,7 @@ export class PointController {
   @Get(':id/histories')
   async history(@Param('id') id): Promise<PointHistory[]> {
     const userId = Number.parseInt(id);
-    return this.pointServices.getPointHistories(userId);
+    return this.pointServices.getPointHistory(userId);
   }
 
   /**

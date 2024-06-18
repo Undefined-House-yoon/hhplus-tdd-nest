@@ -1,25 +1,9 @@
-import { PointHistory, TransactionType, UserPoint } from '../model/point.model';
-
-export interface IUserPointTable {
-  getUserPoint(userId: number): Promise<UserPoint>;
-
-  updateUserPoint(userId: number, amount: number): Promise<UserPoint>;
-}
-
-export interface IPointHistoryTable {
-  getUserHistory(userId: number): Promise<PointHistory[]>;
-
-  addHistory(
-    userId: number,
-    type: TransactionType,
-    amount: number,
-  ): Promise<PointHistory>;
-}
+import { PointHistory, UserPoint } from '../model/point.model';
 
 export interface IPointService {
   getPoint(userId: number): Promise<UserPoint>;
 
-  getHistory(userId: number): Promise<PointHistory[]>;
+  getPointHistory(userId: number): Promise<PointHistory[]>;
 
   chargePoint(userId: number, amount: number): Promise<UserPoint>;
 
