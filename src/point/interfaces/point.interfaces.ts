@@ -1,4 +1,4 @@
-import { PointHistory, TransactionType, UserPoint } from '../point.model';
+import { PointHistory, TransactionType, UserPoint } from '../model/point.model';
 
 export interface IUserPointTable {
   getUserPoint(userId: number): Promise<UserPoint>;

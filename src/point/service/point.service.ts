@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserPointTable } from '../database/userpoint.table';
-import { PointHistoryTable } from '../database/pointhistory.table';
-import { TransactionType } from './point.model';
+import { UserPointTable } from '../../database/userpoint.table';
+import { PointHistoryTable } from '../../database/pointhistory.table';
+import { TransactionType } from '../model/point.model';
 
 @Injectable()
 export class PointService {

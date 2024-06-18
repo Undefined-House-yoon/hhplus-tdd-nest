@@ -1,7 +1,7 @@
 import { PointService } from './point.service';
-import { UserPointTable } from '../database/userpoint.table';
+import { UserPointTable } from '../../database/userpoint.table';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PointHistoryTable } from '../database/pointhistory.table';
+import { PointHistoryTable } from '../../database/pointhistory.table';
 
 export const pointsService = {
   charge: jest.fn(),
