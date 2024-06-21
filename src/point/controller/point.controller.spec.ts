@@ -7,7 +7,6 @@ import { PointBody as PointDto } from '../dto/point.dto';
 describe('PointController', () => {
   let pointController: PointController;
   let pointService: PointService;
-
   beforeEach(async () => {
     const mockPointService = {
       getPoint: jest.fn(),
@@ -29,7 +28,7 @@ describe('PointController', () => {
     expect(pointController).toBeDefined();
   });
 
-  describe('getPoint', () => {
+  describe('GET/:id', () => {
     it('should return user point', async () => {
       const result: UserPoint = { id: 1, point: 100, updateMillis: Date.now() };
       jest.spyOn(pointService, 'getPoint').mockResolvedValue(result);
@@ -39,7 +38,7 @@ describe('PointController', () => {
     });
   });
 
-  describe('getPointHistory', () => {
+  describe('GET/:id/histories', () => {
     it('should return user point histories', async () => {
       const result: PointHistory[] = [
         {
@@ -57,7 +56,7 @@ describe('PointController', () => {
     });
   });
 
-  describe('chargePoint', () => {
+  describe('GET/:id/charge', () => {
     it('should charge user point', async () => {
       const result: UserPoint = { id: 1, point: 150, updateMillis: Date.now() };
       const dto: PointDto = { amount: 50 };
@@ -68,7 +67,7 @@ describe('PointController', () => {
     });
   });
 
-  describe('usePoint', () => {
+  describe('GET/:id/use', () => {
     it('should use user point', async () => {
       const result: UserPoint = { id: 1, point: 50, updateMillis: Date.now() };
       const dto: PointDto = { amount: 50 };
