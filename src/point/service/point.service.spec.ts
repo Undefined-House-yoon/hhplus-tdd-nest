@@ -8,27 +8,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 
-// it('동시에 포인트 충전/차감/충전 요청이 와도 잘 처리해라.', async () => {
-//   // given - 10000 원 충전 시작
-//   await userService.chargePoint(1, 10000);
-//   // when - 각 태스크 병렬 수행 및 기다림
-//   const work1 = async () => {
-//     return await userService.chargePoint(1, 1000);
-//   };
-//   const work2 = async () => {
-//     return await userService.usePoint(1, 100);
-//   };
-//   const work3 = async () => {
-//     return await userService.chargePoint(1, 1000);
-//   };
-//   // Promise.all() 인 이유 : 각 태스크 언제 끝날줄 알고 상수로 기다려..?
-//   await Promise.all([work1(), work2(), work3()]);
-//
-//   // then - 결과 검증 : 다 수행되었는지 ?
-//   const userPoint = await userService.getById(1);
-//   expect(userPoint.point).toEqual(10000 + 1000 - 100 + 1000);
-// });
-/*동시성 테스트는 E2E 에서? */
 describe('PointService', () => {
   let service: PointService;
   let userPointTable: UserPointTable;
