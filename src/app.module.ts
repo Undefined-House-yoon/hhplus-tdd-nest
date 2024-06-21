@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { PointModule } from './point/point.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeormConfig } from './configs/typeorm.config';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [PointModule, TypeOrmModule.forRoot(typeormConfig)],
+  imports: [PointModule, DatabaseModule, TypeOrmModule.forRoot(typeormConfig)],
   controllers: [AppController],
   providers: [AppService],
 })

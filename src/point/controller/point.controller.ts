@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Param,
   Patch,
   ValidationPipe,
@@ -17,6 +18,7 @@ export class PointController {
   constructor(
     // private readonly userDb: UserPointTable,
     // private readonly historyDb: PointHistoryTable,
+    @Inject('IPointService')
     private pointServices: PointService,
   ) {}
 
