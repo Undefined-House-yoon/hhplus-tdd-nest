@@ -96,6 +96,7 @@ export class PointService implements IPointService {
     if (!user) {
       throw new BadRequestException('User not found');
     }
+
     if (user.updateMillis !== currentUpdateMillis) {
       return false; // 버전 충돌
     }
