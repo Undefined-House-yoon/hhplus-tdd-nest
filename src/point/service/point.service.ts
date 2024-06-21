@@ -5,104 +5,77 @@ import {
 } from '@nestjs/common';
 import { UserPointTable } from '../../database/userpoint.table';
 import { PointHistoryTable } from '../../database/pointhistory.table';
-import { TransactionType } from '../model/point.model';
+import { TransactionType, UserPoint } from '../model/point.model';
 import { IPointService } from '../interfaces/point.interfaces';
+import { Mutex } from 'async-mutex';
 
 @Injectable()
 export class PointService implements IPointService {
+  private readonly mutex = new Mutex();
+
   constructor(
     private readonly userPointTable: UserPointTable,
     private readonly pointHistoryTable: PointHistoryTable,
   ) {}
 
   //동시성 문제 트랜잭션으로 처리
-  async chargePoint(id: number, amount: number) {
-    const userPoint = await this.userPointTable.selectById(id);
-    const originalPoint = userPoint.point;
-    const currentUpdateMillis = userPoint.updateMillis;
-    userPoint.point += amount;
-    const result: boolean = await this.insertOrUpdateIfVersionMatch(
+  chargePoint = async (id: number, amount: number) =>
+    this.updateUserPoint(
       id,
-      userPoint.point,
-      currentUpdateMillis,
+      amount,
+      TransactionType.CHARGE,
+      (point, amount) => point + amount,
     );
-    try {
-      if (result) {
+
+  //동시성 문제 트랜잭션으로 처리
+  usePoint = async (id: number, usePointAmount: number) =>
+    this.updateUserPoint(
+      id,
+      usePointAmount,
+      TransactionType.USE,
+      (point, amount) => point - amount,
+    );
+
+  getPoint = async (id: number) => this.userPointTable.selectById(id);
+
+  getPointHistory = async (id: number) =>
+    this.pointHistoryTable.selectAllByUserId(id);
+
+  private async updateUserPoint(
+    id: number,
+    amount: number,
+    transactionType: TransactionType,
+    operation: (point: number, amount: number) => number,
+  ): Promise<UserPoint> {
+    return this.mutex.runExclusive(async () => {
+      const userPoint = await this.userPointTable.selectById(id);
+
+      if (!userPoint) {
+        throw new BadRequestException('User not found');
+      }
+
+      const originalPoint = userPoint.point;
+      userPoint.point = operation(userPoint.point, amount);
+
+      if (transactionType === TransactionType.USE && userPoint.point < 0) {
+        throw new BadRequestException('Insufficient balance');
+      }
+
+      try {
+        await this.userPointTable.insertOrUpdate(id, userPoint.point);
         await this.pointHistoryTable.insert(
           id,
           amount,
-          TransactionType.CHARGE,
+          transactionType,
           Date.now(),
         );
-      }
-    } catch (error) {
-      await this.userPointTable.insertOrUpdate(id, originalPoint);
-      throw new InternalServerErrorException(
-        'Transaction failed. Rolled back.',
-      );
-    }
-    return userPoint;
-  }
-
-  //동시성 문제 트랜잭션으로 처리
-  async usePoint(id: number, usePointAmount: number) {
-    const userPoint = await this.userPointTable.selectById(id);
-    const originalPoint = userPoint.point;
-    if (userPoint.point < usePointAmount) {
-      throw new BadRequestException('Insufficient balance');
-    }
-    const currentUpdateMillis = userPoint.updateMillis;
-    userPoint.point -= usePointAmount;
-
-    const result = await this.insertOrUpdateIfVersionMatch(
-      id,
-      userPoint.point,
-      currentUpdateMillis,
-    );
-
-    try {
-      if (result) {
-        await this.pointHistoryTable.insert(
-          id,
-          usePointAmount,
-          TransactionType.USE,
-          Date.now(),
+        return userPoint;
+      } catch (err) {
+        await this.userPointTable.insertOrUpdate(id, originalPoint);
+        throw new InternalServerErrorException(
+          'Transaction failed. Rolled back.',
         );
       }
-    } catch (error) {
-      // 트랜잭션 롤백
-      await this.userPointTable.insertOrUpdate(id, originalPoint);
-      throw new InternalServerErrorException(
-        'Transaction failed. Rolled back.',
-      );
-    }
-    return userPoint;
-  }
-
-  async getPoint(id: number) {
-    return this.userPointTable.selectById(id);
-  }
-
-  async getPointHistory(id: number) {
-    return this.pointHistoryTable.selectAllByUserId(id);
-  }
-
-  private async insertOrUpdateIfVersionMatch(
-    id: number,
-    newPoint: number,
-    currentUpdateMillis: number,
-  ): Promise<boolean> {
-    const user = await this.userPointTable.selectById(id);
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-
-    if (user.updateMillis !== currentUpdateMillis) {
-      return false; // 버전 충돌
-    }
-
-    // 업데이트
-    await this.userPointTable.insertOrUpdate(id, newPoint);
-    return true;
+    });
   }
 }
