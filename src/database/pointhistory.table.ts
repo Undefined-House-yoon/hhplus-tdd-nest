@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-import { PointHistory, TransactionType } from 'src/point/point.model';
+import { PointHistory, TransactionType } from 'src/point/model/point.model';
 
 /**
  * 해당 Table 클래스는 변경하지 않고 공개된 API 만을 사용해 데이터를 제어합니다.
@@ -16,7 +16,7 @@ export class PointHistoryTable {
     transactionType: TransactionType,
     updateMillis: number,
   ): Promise<PointHistory> {
-    return new Promise((r) => {
+    return new Promise(r => {
       setTimeout(() => {
         const history: PointHistory = {
           id: this.cursor++,
@@ -32,8 +32,8 @@ export class PointHistoryTable {
   }
 
   selectAllByUserId(userId: number): Promise<PointHistory[]> {
-    return new Promise((r) => {
-      r(this.table.filter((v) => v.userId == userId));
+    return new Promise(r => {
+      r(this.table.filter(v => v.userId == userId));
     });
   }
 }
