@@ -58,6 +58,7 @@ export class PointService implements IPointService {
       userPoint.point = operation(userPoint.point, amount);
 
       if (transactionType === TransactionType.USE && userPoint.point < 0) {
+        await this.userPointTable.insertOrUpdate(id, originalPoint);
         throw new BadRequestException('Insufficient balance');
       }
 
